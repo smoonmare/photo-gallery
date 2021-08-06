@@ -31,6 +31,23 @@ export class PhotoService {
     };
   }
 
+  private async readAsBase64(cameraPhoto: Photo) {
+    // Fetch the photo, read as blob, then conver to base64 format
+    const responce = await fetch(cameraPhoto.webPath!);
+    const blob = await responce.blob();
+
+    return await this.convertBlobToBase64(blob) as string;
+  }
+
+  convertBlobToBase64 = (blob: Blob) => new Promise((resolve, reject) => {
+    const reader = new FileReader;
+    reader.onerror = reject;
+    reader.onload = () => {
+      resolve(reader.result);
+    };
+    reader.readAsDataURL(blob);
+  })
+
   public async addNewToGallery() {
     // Take a photo
     const capturedPhoto = await Camera.getPhoto({
