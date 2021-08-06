@@ -7,22 +7,23 @@ import { Storage } from '@capacitor/storage';
   providedIn: 'root'
 })
 export class PhotoService {
-  public photos: UserPhoto[] = [];
+  public photos: UserPhoto[] | any = [];
 
   constructor() { }
+
+  private async savePicture(cameraPhoto: Photo) {}
 
   public async addNewToGallery() {
     // Take a photo
     const capturedPhoto = await Camera.getPhoto({
-      resultType: CameraResultType.Uri,
-      source: CameraSource.Camera,
-      quality: 100
+      resultType: CameraResultType.Uri, // file-based data; provides best perfomance
+      source: CameraSource.Camera, // automatically take a new photo with camera
+      quality: 100 // highest quality (0 to 100)
     });
 
-    this.photos.unshift({
-      filepath: "soon...",
-      webviewPath: capturedPhoto.webPath
-    });
+    // Save the picture and add it to collection
+    const savedImageFile = await this.savePicture(capturedPhoto);
+    this.photos.unshift(savedImageFile);
   }
 }
 
