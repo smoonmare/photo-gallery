@@ -11,7 +11,25 @@ export class PhotoService {
 
   constructor() { }
 
-  private async savePicture(cameraPhoto: Photo) {}
+  private async savePicture(cameraPhoto: Photo) {
+    // Convert photo to base64 format, required by Filesystem API to save
+    const base64Data = await this.readAsBase64(cameraPhoto);
+
+    // Write the file to the date directory
+    const fileName = new Date().getTime() + '.jpeg';
+    const saveFile = await Filesystem.writeFile({
+      path: fileName,
+      data: base64Data,
+      directory: Directory.Data
+    });
+
+    // Use webPath to display the new image instead of base64
+    // since it's already loaded
+    return {
+      filepath: fileName,
+      webviewPath: cameraPhoto.webPath
+    };
+  }
 
   public async addNewToGallery() {
     // Take a photo
