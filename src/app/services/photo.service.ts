@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Capacitor } from '@capacitor/core';
 import { Platform } from '@ionic/angular';
 import { Camera, CameraResultType, CameraSource, Photo } from '@capacitor/camera';
 import { Filesystem, Directory } from '@capacitor/filesystem';
@@ -34,6 +35,7 @@ export class PhotoService {
     }
   }
   
+  // Save picture to file on device
   private async savePicture(cameraPhoto: Photo) {
     // Convert photo to base64 format, required by Filesystem API to save
     const base64Data = await this.readAsBase64(cameraPhoto);
@@ -46,12 +48,22 @@ export class PhotoService {
       directory: Directory.Data
     });
 
-    // Use webPath to display the new image instead of base64
-    // since it's already loaded
-    return {
-      filepath: fileName,
-      webviewPath: cameraPhoto.webPath
-    };
+    if (this.platform.is('hybrid')) {
+      // Display the new image by rewriting the 'file://' path to HTTP
+      // Details: https://ionicframework.com/docs/building/webview#file-protocol
+      return {
+        filepath: saveFile.uri,
+        webviewPath: Capacitor.convertFileSrc(saveFile.uri)
+      };
+    }
+    else {
+      // Use webPath to display the new image instead of base64
+      // since it's already loaded
+      return {
+        filepath: fileName,
+        webviewPath: cameraPhoto.webPath
+      };
+    }
   }
 
   private async readAsBase64(cameraPhoto: Photo) {
