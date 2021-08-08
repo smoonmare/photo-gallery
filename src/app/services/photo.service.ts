@@ -8,6 +8,7 @@ import { Storage } from '@capacitor/storage';
 })
 export class PhotoService {
   public photos: UserPhoto[] | any = [];
+  public PHOTO_STORAGE: string = "photos";
 
   constructor() { }
 
@@ -59,6 +60,12 @@ export class PhotoService {
     // Save the picture and add it to collection
     const savedImageFile = await this.savePicture(capturedPhoto);
     this.photos.unshift(savedImageFile);
+
+    // Update photo array by overwritting the existing photo array
+    Storage.set({
+      key: this.PHOTO_STORAGE,
+      value: JSON.stringify(this.photos)
+    });
   }
 }
 
