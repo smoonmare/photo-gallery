@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Platform } from '@ionic/angular';
 import { Camera, CameraResultType, CameraSource, Photo } from '@capacitor/camera';
 import { Filesystem, Directory } from '@capacitor/filesystem';
 import { Storage } from '@capacitor/storage';
@@ -9,8 +10,11 @@ import { Storage } from '@capacitor/storage';
 export class PhotoService {
   public photos: UserPhoto[] | any = [];
   public PHOTO_STORAGE: string = "photos";
+  private platform: Platform;
 
-  constructor() { }
+  constructor(platfrom: Platform) {
+    this.platform = platfrom;
+   }
 
   public async loadSaved() {
     // Retrieve cached photo array data
